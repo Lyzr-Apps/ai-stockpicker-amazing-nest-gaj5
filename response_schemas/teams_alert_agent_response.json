@@ -1,0 +1,24 @@
+{
+  "agent_name": "Teams Alert Agent",
+  "agent_id": "699316dacb2b470c78df003c",
+  "description": "Formats approved stock recommendations into structured Teams messages with buy rationale, risk assessment, key metrics, and target prices; sends to configured Teams channel on demand and on schedule",
+  "agent_type": "json",
+  "accessor": "result",
+  "auto_generated": true,
+  "response_schema": {
+    "delivery_status": "string",
+    "channel_name": "string",
+    "message_preview": "string",
+    "stocks_included": "number",
+    "alert_type": "string",
+    "timestamp": "string"
+  },
+  "example_response": {
+    "delivery_status": "sample string",
+    "channel_name": "sample string",
+    "message_preview": "sample string",
+    "stocks_included": 0,
+    "alert_type": "sample string",
+    "timestamp": "sample string"
+  }
+}

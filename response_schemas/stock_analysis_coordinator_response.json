@@ -1,0 +1,70 @@
+{
+  "agent_name": "Stock Analysis Coordinator",
+  "agent_id": "699316c03f10687c1b73366e",
+  "description": "Coordinates sub-agents across fundamental, technical, and sentiment analysis dimensions; aggregates findings into ranked multibagger candidates with unified buy rationale and composite risk scores",
+  "agent_type": "json",
+  "accessor": "result",
+  "auto_generated": true,
+  "response_schema": {
+    "recommendations": [
+      {
+        "rank": "number",
+        "ticker": "string",
+        "company_name": "string",
+        "sector": "string",
+        "current_price": "string",
+        "target_price": "string",
+        "upside_percentage": "string",
+        "composite_score": "number",
+        "fundamental_score": "number",
+        "technical_score": "number",
+        "sentiment_score": "number",
+        "risk_level": "string",
+        "market_cap": "string",
+        "pe_ratio": "string",
+        "revenue_growth": "string",
+        "buy_rationale": "string",
+        "key_risks": "string",
+        "entry_point": "string",
+        "stop_loss": "string",
+        "insider_activity": "string",
+        "catalyst": "string"
+      }
+    ],
+    "analysis_summary": "string",
+    "market_outlook": "string",
+    "total_candidates_screened": "number",
+    "analysis_date": "string"
+  },
+  "example_response": {
+    "recommendations": [
+      {
+        "rank": 0,
+        "ticker": "sample string",
+        "company_name": "sample string",
+        "sector": "sample string",
+        "current_price": "sample string",
+        "target_price": "sample string",
+        "upside_percentage": "sample string",
+        "composite_score": 0,
+        "fundamental_score": 0,
+        "technical_score": 0,
+        "sentiment_score": 0,
+        "risk_level": "sample string",
+        "market_cap": "sample string",
+        "pe_ratio": "sample string",
+        "revenue_growth": "sample string",
+        "buy_rationale": "sample string",
+        "key_risks": "sample string",
+        "entry_point": "sample string",
+        "stop_loss": "sample string",
+        "insider_activity": "sample string",
+        "catalyst": "sample string"
+      }
+    ],
+    "analysis_summary": "sample string",
+    "market_outlook": "sample string",
+    "total_candidates_screened": 0,
+    "analysis_date": "sample string"
+  }
+}

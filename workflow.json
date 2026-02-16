@@ -1,0 +1,87 @@
+{
+  "nodes": [
+    {
+      "id": "input_node",
+      "type": "Input",
+      "label": "User Query",
+      "nodeCategory": "input"
+    },
+    {
+      "id": "stock_analysis_coordinator",
+      "type": "Agent",
+      "label": "Stock Analysis Coordinator",
+      "nodeCategory": "agent",
+      "agent_id": "699316c03f10687c1b73366e",
+      "provider": "OpenAI",
+      "model": "gpt-4.1",
+      "is_manager": true,
+      "managed_agents": [
+        "699316a8716ed6bba2acca2a",
+        "699316a8ae4e260bd0b22ef6",
+        "699316a8e668a8d1dd0921b3"
+      ]
+    },
+    {
+      "id": "fundamentals_agent",
+      "type": "Agent",
+      "label": "Fundamentals & Valuation Agent",
+      "nodeCategory": "agent",
+      "agent_id": "699316a8716ed6bba2acca2a",
+      "provider": "Perplexity",
+      "model": "sonar-reasoning-pro",
+      "is_sub_agent": true
+    },
+    {
+      "id": "technical_agent",
+      "type": "Agent",
+      "label": "Technical & Momentum Agent",
+      "nodeCategory": "agent",
+      "agent_id": "699316a8ae4e260bd0b22ef6",
+      "provider": "Perplexity",
+      "model": "sonar-reasoning-pro",
+      "is_sub_agent": true
+    },
+    {
+      "id": "sentiment_agent",
+      "type": "Agent",
+      "label": "Sentiment & Insider Agent",
+      "nodeCategory": "agent",
+      "agent_id": "699316a8e668a8d1dd0921b3",
+      "provider": "Perplexity",
+      "model": "sonar-reasoning-pro",
+      "is_sub_agent": true
+    },
+    {
+      "id": "teams_alert_agent",
+      "type": "Agent",
+      "label": "Teams Alert Agent",
+      "nodeCategory": "agent",
+      "agent_id": "699316dacb2b470c78df003c",
+      "provider": "OpenAI",
+      "model": "gpt-4.1",
+      "tools": ["MSTEAMS_SEND_CHANNEL_MESSAGE", "MSTEAMS_LIST_CHANNELS", "MSTEAMS_LIST_TEAMS"]
+    },
+    {
+      "id": "scheduler_node",
+      "type": "Agent",
+      "label": "Scheduled: Weekly Saturday 10:00 AM ET",
+      "nodeCategory": "agent",
+      "schedule_id": "699316e1399dfadeac3775a8"
+    },
+    {
+      "id": "output_node",
+      "type": "Output",
+      "label": "Analysis Results",
+      "nodeCategory": "end"
+    }
+  ],
+  "edges": [
+    { "source": "input_node", "target": "stock_analysis_coordinator" },
+    { "source": "stock_analysis_coordinator", "target": "fundamentals_agent" },
+    { "source": "stock_analysis_coordinator", "target": "technical_agent" },
+    { "source": "stock_analysis_coordinator", "target": "sentiment_agent" },
+    { "source": "stock_analysis_coordinator", "target": "output_node" },
+    { "source": "stock_analysis_coordinator", "target": "teams_alert_agent" },
+    { "source": "teams_alert_agent", "target": "scheduler_node" }
+  ]
+}
