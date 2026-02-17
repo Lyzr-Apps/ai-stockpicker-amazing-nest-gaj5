@@ -1,9 +1,0 @@
-TASK_COMPLETED
-Feature: Individual Stock Analysis (Multibagger + Comprehensive)
-Updated: app/page.tsx
-Changes:
-- Added stock search input with Enter key support on Dashboard
-- Added runStockAnalysis function calling coordinator agent with parallel Promise.all for both analysis types
-- Multibagger tab shows ScoreCircle, metrics, trade setup, rationale, risks, insider activity, catalyst
-- Comprehensive tab shows full rendered markdown analysis (financials, technicals, valuation, SWOT, verdict)
-- Progress bar and error handling included
