@@ -74,6 +74,23 @@ interface Recommendation {
   stop_loss: string
   insider_activity: string
   catalyst: string
+  // Screener.in-style expanded metrics
+  stock_pe?: string
+  industry_pe?: string
+  book_value?: string
+  dividend_yield?: string
+  roce?: string
+  roe?: string
+  face_value?: string
+  high_52w?: string
+  low_52w?: string
+  debt_to_equity?: string
+  promoter_holding?: string
+  eps?: string
+  price_to_book?: string
+  current_ratio?: string
+  profit_margin?: string
+  operating_margin?: string
 }
 
 interface AnalysisResult {
@@ -125,7 +142,12 @@ const SAMPLE_RECOMMENDATIONS: Recommendation[] = [
     entry_point: 'Rs. 7,200-7,500',
     stop_loss: 'Rs. 6,500',
     insider_activity: 'No significant insider selling; promoter holding stable',
-    catalyst: 'EV design wins, new OEM partnerships, margin expansion from AI/ML services'
+    catalyst: 'EV design wins, new OEM partnerships, margin expansion from AI/ML services',
+    stock_pe: '62.5', industry_pe: '28.3', book_value: 'Rs. 198', dividend_yield: '0.5%',
+    roce: '32.8%', roe: '28.5%', face_value: 'Rs. 10', high_52w: 'Rs. 9,450',
+    low_52w: 'Rs. 5,820', debt_to_equity: '0.02', promoter_holding: '43.9%',
+    eps: 'Rs. 119', price_to_book: '37.6', current_ratio: '2.8',
+    profit_margin: '22.1%', operating_margin: '28.4%'
   },
   {
     rank: 2,
@@ -148,7 +170,12 @@ const SAMPLE_RECOMMENDATIONS: Recommendation[] = [
     entry_point: 'Rs. 12,500-13,000',
     stop_loss: 'Rs. 11,000',
     insider_activity: 'Promoter increased holding by 0.5% via creeping acquisition',
-    catalyst: 'Apple ecosystem entry, PLI disbursements, IT hardware manufacturing expansion'
+    catalyst: 'Apple ecosystem entry, PLI disbursements, IT hardware manufacturing expansion',
+    stock_pe: '115', industry_pe: '35.2', book_value: 'Rs. 245', dividend_yield: '0.1%',
+    roce: '22.5%', roe: '19.8%', face_value: 'Rs. 2', high_52w: 'Rs. 15,200',
+    low_52w: 'Rs. 7,600', debt_to_equity: '0.35', promoter_holding: '34.5%',
+    eps: 'Rs. 111', price_to_book: '52.2', current_ratio: '1.4',
+    profit_margin: '3.8%', operating_margin: '5.2%'
   },
   {
     rank: 3,
@@ -171,7 +198,12 @@ const SAMPLE_RECOMMENDATIONS: Recommendation[] = [
     entry_point: 'Rs. 1,480-1,540',
     stop_loss: 'Rs. 1,320',
     insider_activity: 'No insider selling; promoter holding at 55.2%',
-    catalyst: 'New product launches, export market expansion, HALS capacity commissioning'
+    catalyst: 'New product launches, export market expansion, HALS capacity commissioning',
+    stock_pe: '48.3', industry_pe: '32.1', book_value: 'Rs. 185', dividend_yield: '0.3%',
+    roce: '38.5%', roe: '30.2%', face_value: 'Rs. 1', high_52w: 'Rs. 1,850',
+    low_52w: 'Rs. 1,150', debt_to_equity: '0.01', promoter_holding: '55.2%',
+    eps: 'Rs. 31.5', price_to_book: '8.2', current_ratio: '4.5',
+    profit_margin: '50.2%', operating_margin: '55.8%'
   },
   {
     rank: 4,
@@ -194,7 +226,12 @@ const SAMPLE_RECOMMENDATIONS: Recommendation[] = [
     entry_point: 'Rs. 4,700-4,900',
     stop_loss: 'Rs. 4,000',
     insider_activity: 'Promoter purchased Rs. 12 Cr in open market',
-    catalyst: 'OSAT commissioning, defence order wins, semiconductor PLI benefits'
+    catalyst: 'OSAT commissioning, defence order wins, semiconductor PLI benefits',
+    stock_pe: 'N/A', industry_pe: '25.0', book_value: 'Rs. 320', dividend_yield: '0.0%',
+    roce: '15.2%', roe: '12.8%', face_value: 'Rs. 10', high_52w: 'Rs. 6,800',
+    low_52w: 'Rs. 2,100', debt_to_equity: '0.45', promoter_holding: '64.8%',
+    eps: 'Rs. -18', price_to_book: '15.2', current_ratio: '1.8',
+    profit_margin: '-5.2%', operating_margin: '8.5%'
   },
   {
     rank: 5,
@@ -217,7 +254,12 @@ const SAMPLE_RECOMMENDATIONS: Recommendation[] = [
     entry_point: 'Rs. 2,300-2,400',
     stop_loss: 'Rs. 2,050',
     insider_activity: 'DII increased holding by 2.1% last quarter',
-    catalyst: 'BSV synergy realization, chronic therapy market share gains, OTC brand launches'
+    catalyst: 'BSV synergy realization, chronic therapy market share gains, OTC brand launches',
+    stock_pe: '38.5', industry_pe: '30.8', book_value: 'Rs. 145', dividend_yield: '0.6%',
+    roce: '22.8%', roe: '18.5%', face_value: 'Rs. 1', high_52w: 'Rs. 2,750',
+    low_52w: 'Rs. 1,680', debt_to_equity: '0.15', promoter_holding: '75.0%',
+    eps: 'Rs. 61.8', price_to_book: '16.4', current_ratio: '2.2',
+    profit_margin: '15.8%', operating_margin: '22.5%'
   }
 ]
 
@@ -369,10 +411,79 @@ function StockCard({
 
         {expanded && (
           <div className="px-4 pb-4 border-t border-border/30">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
+            {/* Screener.in-style Financial Ratios Grid */}
+            <div className="border border-border/40 rounded-lg overflow-hidden mt-4">
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 divide-x divide-y divide-border/30">
+                <div className="p-2.5">
+                  <p className="text-[10px] text-muted-foreground">Market Cap</p>
+                  <p className="text-xs font-semibold mt-0.5">{rec?.market_cap ?? 'N/A'}</p>
+                </div>
+                <div className="p-2.5">
+                  <p className="text-[10px] text-muted-foreground">Stock P/E</p>
+                  <p className="text-xs font-semibold mt-0.5">{rec?.stock_pe ?? rec?.pe_ratio ?? 'N/A'}</p>
+                </div>
+                <div className="p-2.5">
+                  <p className="text-[10px] text-muted-foreground">Industry P/E</p>
+                  <p className="text-xs font-semibold mt-0.5">{rec?.industry_pe ?? 'N/A'}</p>
+                </div>
+                <div className="p-2.5">
+                  <p className="text-[10px] text-muted-foreground">ROCE</p>
+                  <p className="text-xs font-semibold mt-0.5">{rec?.roce ?? 'N/A'}</p>
+                </div>
+                <div className="p-2.5">
+                  <p className="text-[10px] text-muted-foreground">ROE</p>
+                  <p className="text-xs font-semibold mt-0.5">{rec?.roe ?? 'N/A'}</p>
+                </div>
+                <div className="p-2.5">
+                  <p className="text-[10px] text-muted-foreground">Book Value</p>
+                  <p className="text-xs font-semibold mt-0.5">{rec?.book_value ?? 'N/A'}</p>
+                </div>
+                <div className="p-2.5">
+                  <p className="text-[10px] text-muted-foreground">Dividend Yield</p>
+                  <p className="text-xs font-semibold mt-0.5">{rec?.dividend_yield ?? 'N/A'}</p>
+                </div>
+                <div className="p-2.5">
+                  <p className="text-[10px] text-muted-foreground">52W High</p>
+                  <p className="text-xs font-semibold mt-0.5">{rec?.high_52w ?? 'N/A'}</p>
+                </div>
+                <div className="p-2.5">
+                  <p className="text-[10px] text-muted-foreground">52W Low</p>
+                  <p className="text-xs font-semibold mt-0.5">{rec?.low_52w ?? 'N/A'}</p>
+                </div>
+                <div className="p-2.5">
+                  <p className="text-[10px] text-muted-foreground">Debt/Equity</p>
+                  <p className="text-xs font-semibold mt-0.5">{rec?.debt_to_equity ?? 'N/A'}</p>
+                </div>
+                <div className="p-2.5">
+                  <p className="text-[10px] text-muted-foreground">Promoter Holding</p>
+                  <p className="text-xs font-semibold mt-0.5">{rec?.promoter_holding ?? 'N/A'}</p>
+                </div>
+                <div className="p-2.5">
+                  <p className="text-[10px] text-muted-foreground">EPS</p>
+                  <p className="text-xs font-semibold mt-0.5">{rec?.eps ?? 'N/A'}</p>
+                </div>
+                <div className="p-2.5">
+                  <p className="text-[10px] text-muted-foreground">Price/Book</p>
+                  <p className="text-xs font-semibold mt-0.5">{rec?.price_to_book ?? 'N/A'}</p>
+                </div>
+                <div className="p-2.5">
+                  <p className="text-[10px] text-muted-foreground">Revenue Growth</p>
+                  <p className="text-xs font-semibold mt-0.5">{rec?.revenue_growth ?? 'N/A'}</p>
+                </div>
+                <div className="p-2.5">
+                  <p className="text-[10px] text-muted-foreground">Profit Margin</p>
+                  <p className="text-xs font-semibold mt-0.5">{rec?.profit_margin ?? 'N/A'}</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Score Breakdown + Trade Setup */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
               <Card className="shadow-none border-border/40">
                 <CardHeader className="p-3 pb-2">
-                  <CardTitle className="text-xs font-sans uppercase tracking-wider text-muted-foreground">Score Breakdown</CardTitle>
+                  <CardTitle className="text-xs font-sans uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
+                    <BarChart3 className="w-3.5 h-3.5" /> Score Breakdown
+                  </CardTitle>
                 </CardHeader>
                 <CardContent className="p-3 pt-0">
                   <div className="flex justify-around">
@@ -385,27 +496,30 @@ function StockCard({
 
               <Card className="shadow-none border-border/40">
                 <CardHeader className="p-3 pb-2">
-                  <CardTitle className="text-xs font-sans uppercase tracking-wider text-muted-foreground">Key Metrics</CardTitle>
+                  <CardTitle className="text-xs font-sans uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
+                    <Target className="w-3.5 h-3.5" /> Trade Setup
+                  </CardTitle>
                 </CardHeader>
                 <CardContent className="p-3 pt-0">
-                  <MetricRow label="Market Cap" value={rec?.market_cap} />
-                  <MetricRow label="P/E Ratio" value={rec?.pe_ratio} />
-                  <MetricRow label="Revenue Growth" value={rec?.revenue_growth} />
-                </CardContent>
-              </Card>
-
-              <Card className="shadow-none border-border/40">
-                <CardHeader className="p-3 pb-2">
-                  <CardTitle className="text-xs font-sans uppercase tracking-wider text-muted-foreground">Trade Setup</CardTitle>
-                </CardHeader>
-                <CardContent className="p-3 pt-0">
-                  <MetricRow label="Entry Point" value={rec?.entry_point} />
-                  <MetricRow label="Stop Loss" value={rec?.stop_loss} />
-                  <MetricRow label="Current Price" value={rec?.current_price} />
+                  <div className="grid grid-cols-3 gap-2">
+                    <div className="text-center p-2 bg-secondary/30 rounded">
+                      <p className="text-[10px] text-muted-foreground">Entry</p>
+                      <p className="text-xs font-semibold mt-0.5">{rec?.entry_point ?? 'N/A'}</p>
+                    </div>
+                    <div className="text-center p-2 bg-secondary/30 rounded">
+                      <p className="text-[10px] text-muted-foreground">Stop Loss</p>
+                      <p className="text-xs font-semibold mt-0.5 text-red-600">{rec?.stop_loss ?? 'N/A'}</p>
+                    </div>
+                    <div className="text-center p-2 bg-secondary/30 rounded">
+                      <p className="text-[10px] text-muted-foreground">Target</p>
+                      <p className="text-xs font-semibold mt-0.5 text-emerald-600">{rec?.target_price ?? 'N/A'}</p>
+                    </div>
+                  </div>
                 </CardContent>
               </Card>
             </div>
 
+            {/* Buy Rationale + Key Risks */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
               <div>
                 <h4 className="font-serif font-semibold text-sm mb-2 flex items-center gap-1.5">
@@ -425,6 +539,7 @@ function StockCard({
               </div>
             </div>
 
+            {/* Insider Activity + Catalyst */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
               <div>
                 <h4 className="font-serif font-semibold text-sm mb-1 flex items-center gap-1.5">
@@ -586,7 +701,9 @@ export default function Page() {
     const today = new Date().toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' })
     const message = `IMPORTANT - PRICE ACCURACY: You MUST search for and use CURRENT LIVE share prices from NSE/BSE as of ${today}. Do NOT use any memorized, cached, or training data prices. Search "[stock name] NSE share price today" for each stock and use the actual live/last traded price shown on nseindia.com, bseindia.com, Google Finance, or Moneycontrol. If Reliance Industries shows anything other than approximately Rs. 1,200-1,500, your price data is WRONG and outdated.
 
-Analyze Indian NSE/BSE listed stocks with the following screening criteria: Sectors: ${selectedSectors.join(', ')}. Market Cap Range: ${capLabel}. Risk Tolerance: ${riskTolerance}. Find multibagger candidates with strong fundamentals, technical momentum, and positive sentiment. Focus on promoter holdings, FII/DII activity, and SEBI compliance. Rank by composite score and provide detailed buy rationale with entry points in INR. Every current_price value MUST be the verified live price from today's NSE/BSE data.`
+Analyze Indian NSE/BSE listed stocks with the following screening criteria: Sectors: ${selectedSectors.join(', ')}. Market Cap Range: ${capLabel}. Risk Tolerance: ${riskTolerance}. Find multibagger candidates with strong fundamentals, technical momentum, and positive sentiment. Focus on promoter holdings, FII/DII activity, and SEBI compliance. Rank by composite score and provide detailed buy rationale with entry points in INR. Every current_price value MUST be the verified live price from today's NSE/BSE data.
+
+For EACH recommendation, you MUST include ALL of these Screener.in-style financial metrics: stock_pe (stock P/E ratio), industry_pe (industry average P/E), book_value (in Rs.), dividend_yield (as %), roce (Return on Capital Employed as %), roe (Return on Equity as %), face_value (in Rs.), high_52w (52-week high price in Rs.), low_52w (52-week low price in Rs.), debt_to_equity (ratio), promoter_holding (as %), eps (Earnings Per Share in Rs.), price_to_book (ratio), current_ratio (ratio), profit_margin (as %), operating_margin (as %). These fields are MANDATORY for every stock recommendation.`
 
     try {
       const result = await callAIAgent(message, COORDINATOR_AGENT_ID)
@@ -651,7 +768,11 @@ Analyze Indian NSE/BSE listed stocks with the following screening criteria: Sect
     const today = new Date().toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' })
     const multibaggerMessage = `CRITICAL - PRICE ACCURACY REQUIREMENT: Before analyzing, you MUST search for the CURRENT LIVE share price of "${stockName}" on NSE/BSE as of ${today}. Search "${stockName} NSE share price today ${today}" and use the ACTUAL live/last traded price from nseindia.com, bseindia.com, Google Finance, or Moneycontrol. Do NOT use any memorized, cached, or training data prices - they are WRONG. For reference: Reliance Industries trades around Rs. 1,200-1,500 (NOT Rs. 2,900+).
 
-Analyze the Indian NSE/BSE listed stock "${stockName}" for multibagger potential. Provide a single recommendation object with: rank (set to 1), ticker, company_name, sector, current_price (MUST be the verified live price from NSE/BSE as of today in Rs.), target_price (in Rs.), upside_percentage, composite_score (1-10), fundamental_score (1-10), technical_score (1-10), sentiment_score (1-10), risk_level (Low/Medium/High), market_cap (in Cr), pe_ratio, revenue_growth, buy_rationale (detailed), key_risks (detailed), entry_point (in Rs.), stop_loss (in Rs.), insider_activity, and catalyst. Also provide analysis_summary, market_outlook, total_candidates_screened (set to 1), and analysis_date. Focus on promoter holdings, FII/DII activity, SEBI compliance, and multibagger characteristics.`
+Analyze the Indian NSE/BSE listed stock "${stockName}" for multibagger potential. Provide a single recommendation object with: rank (set to 1), ticker, company_name, sector, current_price (MUST be the verified live price from NSE/BSE as of today in Rs.), target_price (in Rs.), upside_percentage, composite_score (1-10), fundamental_score (1-10), technical_score (1-10), sentiment_score (1-10), risk_level (Low/Medium/High), market_cap (in Cr), pe_ratio, revenue_growth, buy_rationale (detailed), key_risks (detailed), entry_point (in Rs.), stop_loss (in Rs.), insider_activity, and catalyst.
+
+MANDATORY Screener.in-style metrics for the recommendation: stock_pe (stock P/E ratio), industry_pe (industry average P/E), book_value (in Rs.), dividend_yield (as %), roce (Return on Capital Employed as %), roe (Return on Equity as %), face_value (in Rs.), high_52w (52-week high price in Rs.), low_52w (52-week low price in Rs.), debt_to_equity (ratio), promoter_holding (as %), eps (Earnings Per Share in Rs.), price_to_book (ratio), current_ratio (ratio), profit_margin (as %), operating_margin (as %).
+
+Also provide analysis_summary, market_outlook, total_candidates_screened (set to 1), and analysis_date. Focus on promoter holdings, FII/DII activity, SEBI compliance, and multibagger characteristics.`
 
     const normalMessage = `CRITICAL - PRICE ACCURACY REQUIREMENT: Before analyzing, you MUST search for the CURRENT LIVE share price of "${stockName}" on NSE/BSE as of ${today}. Search "${stockName} NSE share price today ${today}" and use the ACTUAL live/last traded price. Do NOT use memorized or training data prices.
 
@@ -1102,48 +1223,130 @@ Provide all prices in INR (Rs.) and reference NSE/BSE data. The current share pr
 
                             <TabsContent value="multibagger" className="mt-4">
                               {stockAnalysisResult ? (
-                                <div className="space-y-4">
-                                  {/* Score + Price Header */}
-                                  <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 p-4 bg-secondary/30 rounded-lg">
-                                    <ScoreCircle score={stockAnalysisResult?.composite_score ?? 0} label="Composite" size="lg" />
-                                    <div className="flex-1">
-                                      <div className="flex items-center gap-2 flex-wrap">
-                                        <Badge className="bg-primary text-primary-foreground font-mono text-sm px-2.5 py-1 hover:bg-primary">{stockAnalysisResult?.ticker ?? 'N/A'}</Badge>
-                                        <span className="font-serif font-semibold">{stockAnalysisResult?.company_name ?? 'Unknown'}</span>
-                                        <Badge variant="outline" className="text-xs">{stockAnalysisResult?.sector ?? 'N/A'}</Badge>
-                                        <RiskBadge level={stockAnalysisResult?.risk_level ?? 'Medium'} />
+                                <div className="space-y-5">
+                                  {/* ── Screener.in-style Company Header ── */}
+                                  <div className="border border-border/50 rounded-lg overflow-hidden">
+                                    <div className="p-4 md:p-5 bg-secondary/20">
+                                      <div className="flex flex-col sm:flex-row sm:items-center gap-3">
+                                        <div className="flex-1 min-w-0">
+                                          <div className="flex items-center gap-2 flex-wrap">
+                                            <h3 className="font-serif font-bold text-xl">{stockAnalysisResult?.company_name ?? 'Unknown'}</h3>
+                                            <Badge variant="outline" className="text-xs font-mono">{stockAnalysisResult?.ticker ?? 'N/A'}</Badge>
+                                            <Badge variant="outline" className="text-xs">{stockAnalysisResult?.sector ?? 'N/A'}</Badge>
+                                            <RiskBadge level={stockAnalysisResult?.risk_level ?? 'Medium'} />
+                                          </div>
+                                          <div className="flex items-center gap-2 mt-1">
+                                            <Badge variant="secondary" className="text-xs px-1.5 py-0 font-mono">BSE</Badge>
+                                            <Badge variant="secondary" className="text-xs px-1.5 py-0 font-mono">NSE</Badge>
+                                          </div>
+                                        </div>
+                                        <div className="flex items-end gap-4">
+                                          <div className="text-right">
+                                            <p className="text-3xl font-serif font-bold tracking-tight">{stockAnalysisResult?.current_price ?? 'N/A'}</p>
+                                            <div className="flex items-center gap-1.5 justify-end mt-0.5">
+                                              {(() => {
+                                                const up = stockAnalysisResult?.upside_percentage ?? '0%'
+                                                const upNum = parseFloat(up.replace('%', '').replace('+', ''))
+                                                const positive = !isNaN(upNum) && upNum > 0
+                                                return (
+                                                  <>
+                                                    {positive ? <ArrowUp className="w-4 h-4 text-emerald-600" /> : <ArrowDown className="w-4 h-4 text-red-600" />}
+                                                    <span className={`text-sm font-bold ${positive ? 'text-emerald-600' : 'text-red-600'}`}>{up} upside to target</span>
+                                                  </>
+                                                )
+                                              })()}
+                                            </div>
+                                            <p className="text-xs text-muted-foreground mt-0.5">Target: {stockAnalysisResult?.target_price ?? 'N/A'}</p>
+                                          </div>
+                                          <ScoreCircle score={stockAnalysisResult?.composite_score ?? 0} label="Score" size="lg" />
+                                        </div>
                                       </div>
-                                      <div className="flex items-center gap-4 mt-2 flex-wrap">
-                                        <div>
-                                          <span className="text-xs text-muted-foreground">Current:</span>
-                                          <span className="text-sm font-semibold ml-1">{stockAnalysisResult?.current_price ?? 'N/A'}</span>
-                                        </div>
-                                        <div>
-                                          <span className="text-xs text-muted-foreground">Target:</span>
-                                          <span className="text-sm font-semibold ml-1">{stockAnalysisResult?.target_price ?? 'N/A'}</span>
-                                        </div>
-                                        <div className="flex items-center gap-1">
-                                          {(() => {
-                                            const up = stockAnalysisResult?.upside_percentage ?? '0%'
-                                            const upNum = parseFloat(up.replace('%', '').replace('+', ''))
-                                            const positive = !isNaN(upNum) && upNum > 0
-                                            return (
-                                              <>
-                                                {positive ? <ArrowUp className="w-3.5 h-3.5 text-emerald-600" /> : <ArrowDown className="w-3.5 h-3.5 text-red-600" />}
-                                                <span className={`text-sm font-bold ${positive ? 'text-emerald-600' : 'text-red-600'}`}>{up}</span>
-                                              </>
-                                            )
-                                          })()}
-                                        </div>
+                                    </div>
+
+                                    {/* ── Screener.in-style Financial Ratios Grid ── */}
+                                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 divide-x divide-y divide-border/30">
+                                      <div className="p-3">
+                                        <p className="text-xs text-muted-foreground">Market Cap</p>
+                                        <p className="text-sm font-semibold mt-0.5">{stockAnalysisResult?.market_cap ?? 'N/A'}</p>
+                                      </div>
+                                      <div className="p-3">
+                                        <p className="text-xs text-muted-foreground">Stock P/E</p>
+                                        <p className="text-sm font-semibold mt-0.5">{stockAnalysisResult?.stock_pe ?? stockAnalysisResult?.pe_ratio ?? 'N/A'}</p>
+                                      </div>
+                                      <div className="p-3">
+                                        <p className="text-xs text-muted-foreground">Industry P/E</p>
+                                        <p className="text-sm font-semibold mt-0.5">{stockAnalysisResult?.industry_pe ?? 'N/A'}</p>
+                                      </div>
+                                      <div className="p-3">
+                                        <p className="text-xs text-muted-foreground">ROCE</p>
+                                        <p className="text-sm font-semibold mt-0.5">{stockAnalysisResult?.roce ?? 'N/A'}</p>
+                                      </div>
+                                      <div className="p-3">
+                                        <p className="text-xs text-muted-foreground">ROE</p>
+                                        <p className="text-sm font-semibold mt-0.5">{stockAnalysisResult?.roe ?? 'N/A'}</p>
+                                      </div>
+                                      <div className="p-3">
+                                        <p className="text-xs text-muted-foreground">Book Value</p>
+                                        <p className="text-sm font-semibold mt-0.5">{stockAnalysisResult?.book_value ?? 'N/A'}</p>
+                                      </div>
+                                      <div className="p-3">
+                                        <p className="text-xs text-muted-foreground">Dividend Yield</p>
+                                        <p className="text-sm font-semibold mt-0.5">{stockAnalysisResult?.dividend_yield ?? 'N/A'}</p>
+                                      </div>
+                                      <div className="p-3">
+                                        <p className="text-xs text-muted-foreground">Face Value</p>
+                                        <p className="text-sm font-semibold mt-0.5">{stockAnalysisResult?.face_value ?? 'N/A'}</p>
+                                      </div>
+                                      <div className="p-3">
+                                        <p className="text-xs text-muted-foreground">52W High</p>
+                                        <p className="text-sm font-semibold mt-0.5">{stockAnalysisResult?.high_52w ?? 'N/A'}</p>
+                                      </div>
+                                      <div className="p-3">
+                                        <p className="text-xs text-muted-foreground">52W Low</p>
+                                        <p className="text-sm font-semibold mt-0.5">{stockAnalysisResult?.low_52w ?? 'N/A'}</p>
+                                      </div>
+                                      <div className="p-3">
+                                        <p className="text-xs text-muted-foreground">Debt to Equity</p>
+                                        <p className="text-sm font-semibold mt-0.5">{stockAnalysisResult?.debt_to_equity ?? 'N/A'}</p>
+                                      </div>
+                                      <div className="p-3">
+                                        <p className="text-xs text-muted-foreground">Promoter Holding</p>
+                                        <p className="text-sm font-semibold mt-0.5">{stockAnalysisResult?.promoter_holding ?? 'N/A'}</p>
+                                      </div>
+                                      <div className="p-3">
+                                        <p className="text-xs text-muted-foreground">EPS</p>
+                                        <p className="text-sm font-semibold mt-0.5">{stockAnalysisResult?.eps ?? 'N/A'}</p>
+                                      </div>
+                                      <div className="p-3">
+                                        <p className="text-xs text-muted-foreground">Price to Book</p>
+                                        <p className="text-sm font-semibold mt-0.5">{stockAnalysisResult?.price_to_book ?? 'N/A'}</p>
+                                      </div>
+                                      <div className="p-3">
+                                        <p className="text-xs text-muted-foreground">Revenue Growth</p>
+                                        <p className="text-sm font-semibold mt-0.5">{stockAnalysisResult?.revenue_growth ?? 'N/A'}</p>
+                                      </div>
+                                      <div className="p-3">
+                                        <p className="text-xs text-muted-foreground">Profit Margin</p>
+                                        <p className="text-sm font-semibold mt-0.5">{stockAnalysisResult?.profit_margin ?? 'N/A'}</p>
+                                      </div>
+                                      <div className="p-3">
+                                        <p className="text-xs text-muted-foreground">Operating Margin</p>
+                                        <p className="text-sm font-semibold mt-0.5">{stockAnalysisResult?.operating_margin ?? 'N/A'}</p>
+                                      </div>
+                                      <div className="p-3">
+                                        <p className="text-xs text-muted-foreground">Current Ratio</p>
+                                        <p className="text-sm font-semibold mt-0.5">{stockAnalysisResult?.current_ratio ?? 'N/A'}</p>
                                       </div>
                                     </div>
                                   </div>
 
-                                  {/* Score Breakdown + Metrics */}
-                                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                  {/* ── Score Breakdown + Trade Setup Row ── */}
+                                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                     <Card className="shadow-none border-border/40">
                                       <CardHeader className="p-3 pb-2">
-                                        <CardTitle className="text-xs font-sans uppercase tracking-wider text-muted-foreground">Score Breakdown</CardTitle>
+                                        <CardTitle className="text-xs font-sans uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
+                                          <BarChart3 className="w-3.5 h-3.5" /> Score Breakdown
+                                        </CardTitle>
                                       </CardHeader>
                                       <CardContent className="p-3 pt-0">
                                         <div className="flex justify-around">
@@ -1155,60 +1358,79 @@ Provide all prices in INR (Rs.) and reference NSE/BSE data. The current share pr
                                     </Card>
                                     <Card className="shadow-none border-border/40">
                                       <CardHeader className="p-3 pb-2">
-                                        <CardTitle className="text-xs font-sans uppercase tracking-wider text-muted-foreground">Key Metrics</CardTitle>
+                                        <CardTitle className="text-xs font-sans uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
+                                          <Target className="w-3.5 h-3.5" /> Trade Setup
+                                        </CardTitle>
                                       </CardHeader>
                                       <CardContent className="p-3 pt-0">
-                                        <MetricRow label="Market Cap" value={stockAnalysisResult?.market_cap} />
-                                        <MetricRow label="P/E Ratio" value={stockAnalysisResult?.pe_ratio} />
-                                        <MetricRow label="Revenue Growth" value={stockAnalysisResult?.revenue_growth} />
+                                        <div className="grid grid-cols-3 gap-3">
+                                          <div className="text-center p-2 bg-secondary/30 rounded">
+                                            <p className="text-xs text-muted-foreground">Entry Point</p>
+                                            <p className="text-sm font-semibold mt-0.5">{stockAnalysisResult?.entry_point ?? 'N/A'}</p>
+                                          </div>
+                                          <div className="text-center p-2 bg-secondary/30 rounded">
+                                            <p className="text-xs text-muted-foreground">Stop Loss</p>
+                                            <p className="text-sm font-semibold mt-0.5 text-red-600">{stockAnalysisResult?.stop_loss ?? 'N/A'}</p>
+                                          </div>
+                                          <div className="text-center p-2 bg-secondary/30 rounded">
+                                            <p className="text-xs text-muted-foreground">Target</p>
+                                            <p className="text-sm font-semibold mt-0.5 text-emerald-600">{stockAnalysisResult?.target_price ?? 'N/A'}</p>
+                                          </div>
+                                        </div>
+                                      </CardContent>
+                                    </Card>
+                                  </div>
+
+                                  {/* ── Rationale + Risks ── */}
+                                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <Card className="shadow-none border-border/40">
+                                      <CardHeader className="p-3 pb-2">
+                                        <CardTitle className="text-xs font-sans uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
+                                          <Target className="w-3.5 h-3.5 text-primary" /> Buy Rationale
+                                        </CardTitle>
+                                      </CardHeader>
+                                      <CardContent className="p-3 pt-0">
+                                        <div className="text-sm text-muted-foreground leading-relaxed">
+                                          {renderMarkdown(stockAnalysisResult?.buy_rationale ?? '')}
+                                        </div>
                                       </CardContent>
                                     </Card>
                                     <Card className="shadow-none border-border/40">
                                       <CardHeader className="p-3 pb-2">
-                                        <CardTitle className="text-xs font-sans uppercase tracking-wider text-muted-foreground">Trade Setup</CardTitle>
+                                        <CardTitle className="text-xs font-sans uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
+                                          <Shield className="w-3.5 h-3.5 text-destructive" /> Key Risks
+                                        </CardTitle>
                                       </CardHeader>
                                       <CardContent className="p-3 pt-0">
-                                        <MetricRow label="Entry Point" value={stockAnalysisResult?.entry_point} />
-                                        <MetricRow label="Stop Loss" value={stockAnalysisResult?.stop_loss} />
-                                        <MetricRow label="Current Price" value={stockAnalysisResult?.current_price} />
+                                        <div className="text-sm text-muted-foreground leading-relaxed">
+                                          {renderMarkdown(stockAnalysisResult?.key_risks ?? '')}
+                                        </div>
                                       </CardContent>
                                     </Card>
                                   </div>
 
-                                  {/* Rationale + Risks */}
+                                  {/* ── Insider + Catalyst ── */}
                                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    <div>
-                                      <h4 className="font-serif font-semibold text-sm mb-2 flex items-center gap-1.5">
-                                        <Target className="w-3.5 h-3.5 text-primary" /> Buy Rationale
-                                      </h4>
-                                      <div className="text-sm text-muted-foreground leading-relaxed">
-                                        {renderMarkdown(stockAnalysisResult?.buy_rationale ?? '')}
-                                      </div>
-                                    </div>
-                                    <div>
-                                      <h4 className="font-serif font-semibold text-sm mb-2 flex items-center gap-1.5">
-                                        <Shield className="w-3.5 h-3.5 text-destructive" /> Key Risks
-                                      </h4>
-                                      <div className="text-sm text-muted-foreground leading-relaxed">
-                                        {renderMarkdown(stockAnalysisResult?.key_risks ?? '')}
-                                      </div>
-                                    </div>
-                                  </div>
-
-                                  {/* Insider + Catalyst */}
-                                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    <div>
-                                      <h4 className="font-serif font-semibold text-sm mb-1 flex items-center gap-1.5">
-                                        <Activity className="w-3.5 h-3.5 text-primary" /> Insider Activity
-                                      </h4>
-                                      <p className="text-sm text-muted-foreground">{stockAnalysisResult?.insider_activity ?? 'No data available'}</p>
-                                    </div>
-                                    <div>
-                                      <h4 className="font-serif font-semibold text-sm mb-1 flex items-center gap-1.5">
-                                        <Zap className="w-3.5 h-3.5 text-amber-600" /> Catalyst
-                                      </h4>
-                                      <p className="text-sm text-muted-foreground">{stockAnalysisResult?.catalyst ?? 'No catalyst identified'}</p>
-                                    </div>
+                                    <Card className="shadow-none border-border/40">
+                                      <CardHeader className="p-3 pb-2">
+                                        <CardTitle className="text-xs font-sans uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
+                                          <Activity className="w-3.5 h-3.5 text-primary" /> Insider Activity
+                                        </CardTitle>
+                                      </CardHeader>
+                                      <CardContent className="p-3 pt-0">
+                                        <p className="text-sm text-muted-foreground">{stockAnalysisResult?.insider_activity ?? 'No data available'}</p>
+                                      </CardContent>
+                                    </Card>
+                                    <Card className="shadow-none border-border/40">
+                                      <CardHeader className="p-3 pb-2">
+                                        <CardTitle className="text-xs font-sans uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
+                                          <Zap className="w-3.5 h-3.5 text-amber-600" /> Catalyst
+                                        </CardTitle>
+                                      </CardHeader>
+                                      <CardContent className="p-3 pt-0">
+                                        <p className="text-sm text-muted-foreground">{stockAnalysisResult?.catalyst ?? 'No catalyst identified'}</p>
+                                      </CardContent>
+                                    </Card>
                                   </div>
                                 </div>
                               ) : (
