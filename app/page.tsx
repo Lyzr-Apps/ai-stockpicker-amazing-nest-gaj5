@@ -460,6 +460,16 @@ export default function Page() {
   const [analysisProgress, setAnalysisProgress] = useState(0)
   const [analysisError, setAnalysisError] = useState<string | null>(null)
 
+  // Single stock analysis state
+  const [stockSearchInput, setStockSearchInput] = useState('')
+  const [analyzingStock, setAnalyzingStock] = useState(false)
+  const [stockAnalysisProgress, setStockAnalysisProgress] = useState(0)
+  const [stockAnalysisError, setStockAnalysisError] = useState<string | null>(null)
+  const [stockAnalysisResult, setStockAnalysisResult] = useState<Recommendation | null>(null)
+  const [stockNormalAnalysis, setStockNormalAnalysis] = useState<string>('')
+  const [stockAnalysisTab, setStockAnalysisTab] = useState<'multibagger' | 'normal'>('multibagger')
+  const [stockAnalyzedName, setStockAnalyzedName] = useState('')
+
   // Data state
   const [recommendations, setRecommendations] = useState<Recommendation[]>([])
   const [analysisSummary, setAnalysisSummary] = useState('')
@@ -612,6 +622,113 @@ export default function Page() {
       setAnalysisError('Network error. Please check your connection and try again.')
     } finally {
       setAnalyzing(false)
+      setActiveAgentId(null)
+    }
+  }
+
+  // ── Run Single Stock Analysis ─────────────────────────────────────────────
+  const runStockAnalysis = async () => {
+    const stockName = stockSearchInput.trim()
+    if (!stockName) {
+      setStockAnalysisError('Please enter a stock name or ticker symbol.')
+      return
+    }
+    setAnalyzingStock(true)
+    setStockAnalysisError(null)
+    setStockAnalysisProgress(0)
+    setStockAnalysisResult(null)
+    setStockNormalAnalysis('')
+    setStockAnalyzedName(stockName)
+    setActiveAgentId(COORDINATOR_AGENT_ID)
+
+    const progressInterval = setInterval(() => {
+      setStockAnalysisProgress(prev => Math.min(prev + Math.random() * 6, 90))
+    }, 900)
+
+    const multibaggerMessage = `Analyze the Indian NSE/BSE listed stock "${stockName}" for multibagger potential. Provide a single recommendation object with: rank (set to 1), ticker, company_name, sector, current_price (in Rs.), target_price (in Rs.), upside_percentage, composite_score (1-10), fundamental_score (1-10), technical_score (1-10), sentiment_score (1-10), risk_level (Low/Medium/High), market_cap (in Cr), pe_ratio, revenue_growth, buy_rationale (detailed), key_risks (detailed), entry_point (in Rs.), stop_loss (in Rs.), insider_activity, and catalyst. Also provide analysis_summary, market_outlook, total_candidates_screened (set to 1), and analysis_date. Focus on promoter holdings, FII/DII activity, SEBI compliance, and multibagger characteristics.`
+
+    const normalMessage = `Provide a comprehensive normal stock analysis for the Indian NSE/BSE listed stock "${stockName}". Cover the following in detail using markdown formatting:
+
+## Company Overview
+Brief description, sector, market position, key products/services.
+
+## Financial Analysis
+Revenue trends, profit margins, EPS growth, debt-to-equity, ROE, ROCE, cash flow analysis. Use INR values.
+
+## Technical Analysis
+Current price action, key support/resistance levels, moving averages (50/200 DMA), RSI, MACD signals, volume trends.
+
+## Valuation Assessment
+P/E ratio vs industry, P/B ratio, PEG ratio, EV/EBITDA. Whether overvalued or undervalued.
+
+## Shareholding Pattern
+Promoter holding %, FII/DII changes, pledge status.
+
+## Industry & Competitive Position
+Market share, competitive advantages/moats, industry tailwinds/headwinds.
+
+## SWOT Analysis
+Strengths, Weaknesses, Opportunities, Threats.
+
+## Investment Verdict
+Overall recommendation (Buy/Hold/Sell), time horizon, target price in INR, key monitorables.
+
+Provide all prices in INR (Rs.) and reference NSE/BSE data.`
+
+    try {
+      const [multibaggerResult, normalResult] = await Promise.all([
+        callAIAgent(multibaggerMessage, COORDINATOR_AGENT_ID),
+        callAIAgent(normalMessage, COORDINATOR_AGENT_ID)
+      ])
+
+      clearInterval(progressInterval)
+      setStockAnalysisProgress(100)
+
+      // Process multibagger result
+      if (multibaggerResult.success && multibaggerResult?.response?.status === 'success') {
+        const data = multibaggerResult.response.result
+        if (data && Array.isArray(data?.recommendations) && data.recommendations.length > 0) {
+          setStockAnalysisResult(data.recommendations[0])
+        } else if (data && data?.ticker) {
+          setStockAnalysisResult(data as Recommendation)
+        }
+      }
+
+      // Process normal analysis result
+      if (normalResult.success && normalResult?.response?.status === 'success') {
+        const data = normalResult.response.result
+        if (typeof data === 'string') {
+          setStockNormalAnalysis(data)
+        } else if (data?.analysis_summary) {
+          const parts: string[] = []
+          if (data.analysis_summary) parts.push(data.analysis_summary)
+          if (data.market_outlook) parts.push(`\n\n## Market Outlook\n${data.market_outlook}`)
+          if (Array.isArray(data.recommendations) && data.recommendations.length > 0) {
+            const rec = data.recommendations[0]
+            parts.push(`\n\n## Buy Rationale\n${rec?.buy_rationale ?? ''}`)
+            parts.push(`\n\n## Key Risks\n${rec?.key_risks ?? ''}`)
+            parts.push(`\n\n## Insider Activity\n${rec?.insider_activity ?? 'No data available'}`)
+            parts.push(`\n\n## Catalyst\n${rec?.catalyst ?? 'No catalyst identified'}`)
+          }
+          setStockNormalAnalysis(parts.join(''))
+        } else if (data?.message) {
+          setStockNormalAnalysis(data.message)
+        } else {
+          setStockNormalAnalysis(JSON.stringify(data, null, 2))
+        }
+      }
+
+      // Check if at least one analysis succeeded
+      const multibaggerOk = multibaggerResult.success && multibaggerResult?.response?.status === 'success'
+      const normalOk = normalResult.success && normalResult?.response?.status === 'success'
+      if (!multibaggerOk && !normalOk) {
+        setStockAnalysisError('Analysis failed for both types. Please try again with a valid NSE/BSE stock name or ticker.')
+      }
+    } catch {
+      clearInterval(progressInterval)
+      setStockAnalysisError('Network error. Please check your connection and try again.')
+    } finally {
+      setAnalyzingStock(false)
       setActiveAgentId(null)
     }
   }
@@ -903,6 +1020,218 @@ export default function Page() {
                       )}
                     </div>
                   )}
+
+                  {/* ── Single Stock Analysis ──────────────────────────── */}
+                  <Card className="shadow-sm">
+                    <CardHeader>
+                      <CardTitle className="font-serif text-lg flex items-center gap-2">
+                        <Eye className="w-5 h-5 text-primary" /> Analyze Individual Stock
+                      </CardTitle>
+                      <CardDescription>Enter any NSE/BSE stock name or ticker for multibagger + comprehensive analysis</CardDescription>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                      <div className="flex flex-col sm:flex-row gap-3">
+                        <div className="relative flex-1">
+                          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                          <Input
+                            placeholder="e.g. Reliance, TATAELXSI, INFY, HDFCBANK..."
+                            value={stockSearchInput}
+                            onChange={(e) => setStockSearchInput(e.target.value)}
+                            onKeyDown={(e) => { if (e.key === 'Enter' && !analyzingStock) runStockAnalysis() }}
+                            className="pl-9"
+                            disabled={analyzingStock}
+                          />
+                        </div>
+                        <Button
+                          onClick={runStockAnalysis}
+                          disabled={analyzingStock || !stockSearchInput.trim()}
+                          className="sm:w-auto w-full"
+                        >
+                          {analyzingStock ? (
+                            <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Analyzing...</>
+                          ) : (
+                            <><Search className="w-4 h-4 mr-2" /> Analyze Stock</>
+                          )}
+                        </Button>
+                      </div>
+
+                      {stockAnalysisError && (
+                        <div className="flex items-center gap-2 text-sm text-destructive bg-destructive/10 rounded-lg px-3 py-2">
+                          <AlertCircle className="w-4 h-4 flex-shrink-0" />
+                          <span>{stockAnalysisError}</span>
+                        </div>
+                      )}
+
+                      {analyzingStock && (
+                        <div className="space-y-2">
+                          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                            <Loader2 className="w-4 h-4 animate-spin" />
+                            <span>Running multibagger and comprehensive analysis for {stockAnalyzedName}...</span>
+                          </div>
+                          <Progress value={stockAnalysisProgress} className="h-2" />
+                        </div>
+                      )}
+
+                      {!analyzingStock && (stockAnalysisResult || stockNormalAnalysis) && (
+                        <div className="space-y-4">
+                          <Separator />
+                          <div className="flex items-center justify-between">
+                            <h3 className="font-serif font-semibold text-base flex items-center gap-2">
+                              <Target className="w-4 h-4 text-primary" />
+                              Analysis: {stockAnalyzedName}
+                            </h3>
+                          </div>
+
+                          <Tabs value={stockAnalysisTab} onValueChange={(v) => setStockAnalysisTab(v as 'multibagger' | 'normal')}>
+                            <TabsList className="grid grid-cols-2 w-full max-w-md">
+                              <TabsTrigger value="multibagger" className="flex items-center gap-1.5">
+                                <TrendingUp className="w-3.5 h-3.5" /> Multibagger Analysis
+                              </TabsTrigger>
+                              <TabsTrigger value="normal" className="flex items-center gap-1.5">
+                                <BarChart3 className="w-3.5 h-3.5" /> Comprehensive Analysis
+                              </TabsTrigger>
+                            </TabsList>
+
+                            <TabsContent value="multibagger" className="mt-4">
+                              {stockAnalysisResult ? (
+                                <div className="space-y-4">
+                                  {/* Score + Price Header */}
+                                  <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 p-4 bg-secondary/30 rounded-lg">
+                                    <ScoreCircle score={stockAnalysisResult?.composite_score ?? 0} label="Composite" size="lg" />
+                                    <div className="flex-1">
+                                      <div className="flex items-center gap-2 flex-wrap">
+                                        <Badge className="bg-primary text-primary-foreground font-mono text-sm px-2.5 py-1 hover:bg-primary">{stockAnalysisResult?.ticker ?? 'N/A'}</Badge>
+                                        <span className="font-serif font-semibold">{stockAnalysisResult?.company_name ?? 'Unknown'}</span>
+                                        <Badge variant="outline" className="text-xs">{stockAnalysisResult?.sector ?? 'N/A'}</Badge>
+                                        <RiskBadge level={stockAnalysisResult?.risk_level ?? 'Medium'} />
+                                      </div>
+                                      <div className="flex items-center gap-4 mt-2 flex-wrap">
+                                        <div>
+                                          <span className="text-xs text-muted-foreground">Current:</span>
+                                          <span className="text-sm font-semibold ml-1">{stockAnalysisResult?.current_price ?? 'N/A'}</span>
+                                        </div>
+                                        <div>
+                                          <span className="text-xs text-muted-foreground">Target:</span>
+                                          <span className="text-sm font-semibold ml-1">{stockAnalysisResult?.target_price ?? 'N/A'}</span>
+                                        </div>
+                                        <div className="flex items-center gap-1">
+                                          {(() => {
+                                            const up = stockAnalysisResult?.upside_percentage ?? '0%'
+                                            const upNum = parseFloat(up.replace('%', '').replace('+', ''))
+                                            const positive = !isNaN(upNum) && upNum > 0
+                                            return (
+                                              <>
+                                                {positive ? <ArrowUp className="w-3.5 h-3.5 text-emerald-600" /> : <ArrowDown className="w-3.5 h-3.5 text-red-600" />}
+                                                <span className={`text-sm font-bold ${positive ? 'text-emerald-600' : 'text-red-600'}`}>{up}</span>
+                                              </>
+                                            )
+                                          })()}
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
+
+                                  {/* Score Breakdown + Metrics */}
+                                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                    <Card className="shadow-none border-border/40">
+                                      <CardHeader className="p-3 pb-2">
+                                        <CardTitle className="text-xs font-sans uppercase tracking-wider text-muted-foreground">Score Breakdown</CardTitle>
+                                      </CardHeader>
+                                      <CardContent className="p-3 pt-0">
+                                        <div className="flex justify-around">
+                                          <ScoreCircle score={stockAnalysisResult?.fundamental_score ?? 0} label="Fundamental" size="sm" />
+                                          <ScoreCircle score={stockAnalysisResult?.technical_score ?? 0} label="Technical" size="sm" />
+                                          <ScoreCircle score={stockAnalysisResult?.sentiment_score ?? 0} label="Sentiment" size="sm" />
+                                        </div>
+                                      </CardContent>
+                                    </Card>
+                                    <Card className="shadow-none border-border/40">
+                                      <CardHeader className="p-3 pb-2">
+                                        <CardTitle className="text-xs font-sans uppercase tracking-wider text-muted-foreground">Key Metrics</CardTitle>
+                                      </CardHeader>
+                                      <CardContent className="p-3 pt-0">
+                                        <MetricRow label="Market Cap" value={stockAnalysisResult?.market_cap} />
+                                        <MetricRow label="P/E Ratio" value={stockAnalysisResult?.pe_ratio} />
+                                        <MetricRow label="Revenue Growth" value={stockAnalysisResult?.revenue_growth} />
+                                      </CardContent>
+                                    </Card>
+                                    <Card className="shadow-none border-border/40">
+                                      <CardHeader className="p-3 pb-2">
+                                        <CardTitle className="text-xs font-sans uppercase tracking-wider text-muted-foreground">Trade Setup</CardTitle>
+                                      </CardHeader>
+                                      <CardContent className="p-3 pt-0">
+                                        <MetricRow label="Entry Point" value={stockAnalysisResult?.entry_point} />
+                                        <MetricRow label="Stop Loss" value={stockAnalysisResult?.stop_loss} />
+                                        <MetricRow label="Current Price" value={stockAnalysisResult?.current_price} />
+                                      </CardContent>
+                                    </Card>
+                                  </div>
+
+                                  {/* Rationale + Risks */}
+                                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div>
+                                      <h4 className="font-serif font-semibold text-sm mb-2 flex items-center gap-1.5">
+                                        <Target className="w-3.5 h-3.5 text-primary" /> Buy Rationale
+                                      </h4>
+                                      <div className="text-sm text-muted-foreground leading-relaxed">
+                                        {renderMarkdown(stockAnalysisResult?.buy_rationale ?? '')}
+                                      </div>
+                                    </div>
+                                    <div>
+                                      <h4 className="font-serif font-semibold text-sm mb-2 flex items-center gap-1.5">
+                                        <Shield className="w-3.5 h-3.5 text-destructive" /> Key Risks
+                                      </h4>
+                                      <div className="text-sm text-muted-foreground leading-relaxed">
+                                        {renderMarkdown(stockAnalysisResult?.key_risks ?? '')}
+                                      </div>
+                                    </div>
+                                  </div>
+
+                                  {/* Insider + Catalyst */}
+                                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div>
+                                      <h4 className="font-serif font-semibold text-sm mb-1 flex items-center gap-1.5">
+                                        <Activity className="w-3.5 h-3.5 text-primary" /> Insider Activity
+                                      </h4>
+                                      <p className="text-sm text-muted-foreground">{stockAnalysisResult?.insider_activity ?? 'No data available'}</p>
+                                    </div>
+                                    <div>
+                                      <h4 className="font-serif font-semibold text-sm mb-1 flex items-center gap-1.5">
+                                        <Zap className="w-3.5 h-3.5 text-amber-600" /> Catalyst
+                                      </h4>
+                                      <p className="text-sm text-muted-foreground">{stockAnalysisResult?.catalyst ?? 'No catalyst identified'}</p>
+                                    </div>
+                                  </div>
+                                </div>
+                              ) : (
+                                <div className="text-center py-8">
+                                  <AlertCircle className="w-8 h-8 text-muted-foreground/40 mx-auto mb-2" />
+                                  <p className="text-sm text-muted-foreground">Multibagger analysis data not available for this stock.</p>
+                                </div>
+                              )}
+                            </TabsContent>
+
+                            <TabsContent value="normal" className="mt-4">
+                              {stockNormalAnalysis ? (
+                                <Card className="shadow-none border-border/40">
+                                  <CardContent className="p-4 md:p-6">
+                                    <div className="prose prose-sm max-w-none">
+                                      {renderMarkdown(stockNormalAnalysis)}
+                                    </div>
+                                  </CardContent>
+                                </Card>
+                              ) : (
+                                <div className="text-center py-8">
+                                  <AlertCircle className="w-8 h-8 text-muted-foreground/40 mx-auto mb-2" />
+                                  <p className="text-sm text-muted-foreground">Comprehensive analysis data not available for this stock.</p>
+                                </div>
+                              )}
+                            </TabsContent>
+                          </Tabs>
+                        </div>
+                      )}
+                    </CardContent>
+                  </Card>
 
                   <Card className="shadow-sm">
                     <CardHeader>
