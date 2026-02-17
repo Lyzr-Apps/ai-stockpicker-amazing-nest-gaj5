@@ -583,7 +583,10 @@ export default function Page() {
     }, 800)
 
     const capLabel = MARKET_CAP_LABELS[marketCapRange[0] ?? 1] ?? 'Small (500-5,000 Cr)'
-    const message = `Analyze Indian NSE/BSE listed stocks with the following screening criteria: Sectors: ${selectedSectors.join(', ')}. Market Cap Range: ${capLabel}. Risk Tolerance: ${riskTolerance}. Find multibagger candidates with strong fundamentals, technical momentum, and positive sentiment. Focus on promoter holdings, FII/DII activity, and SEBI compliance. Rank by composite score and provide detailed buy rationale with entry points in INR.`
+    const today = new Date().toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' })
+    const message = `IMPORTANT - PRICE ACCURACY: You MUST search for and use CURRENT LIVE share prices from NSE/BSE as of ${today}. Do NOT use any memorized, cached, or training data prices. Search "[stock name] NSE share price today" for each stock and use the actual live/last traded price shown on nseindia.com, bseindia.com, Google Finance, or Moneycontrol. If Reliance Industries shows anything other than approximately Rs. 1,200-1,500, your price data is WRONG and outdated.
+
+Analyze Indian NSE/BSE listed stocks with the following screening criteria: Sectors: ${selectedSectors.join(', ')}. Market Cap Range: ${capLabel}. Risk Tolerance: ${riskTolerance}. Find multibagger candidates with strong fundamentals, technical momentum, and positive sentiment. Focus on promoter holdings, FII/DII activity, and SEBI compliance. Rank by composite score and provide detailed buy rationale with entry points in INR. Every current_price value MUST be the verified live price from today's NSE/BSE data.`
 
     try {
       const result = await callAIAgent(message, COORDINATOR_AGENT_ID)
@@ -645,9 +648,14 @@ export default function Page() {
       setStockAnalysisProgress(prev => Math.min(prev + Math.random() * 6, 90))
     }, 900)
 
-    const multibaggerMessage = `Analyze the Indian NSE/BSE listed stock "${stockName}" for multibagger potential. Provide a single recommendation object with: rank (set to 1), ticker, company_name, sector, current_price (in Rs.), target_price (in Rs.), upside_percentage, composite_score (1-10), fundamental_score (1-10), technical_score (1-10), sentiment_score (1-10), risk_level (Low/Medium/High), market_cap (in Cr), pe_ratio, revenue_growth, buy_rationale (detailed), key_risks (detailed), entry_point (in Rs.), stop_loss (in Rs.), insider_activity, and catalyst. Also provide analysis_summary, market_outlook, total_candidates_screened (set to 1), and analysis_date. Focus on promoter holdings, FII/DII activity, SEBI compliance, and multibagger characteristics.`
+    const today = new Date().toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' })
+    const multibaggerMessage = `CRITICAL - PRICE ACCURACY REQUIREMENT: Before analyzing, you MUST search for the CURRENT LIVE share price of "${stockName}" on NSE/BSE as of ${today}. Search "${stockName} NSE share price today ${today}" and use the ACTUAL live/last traded price from nseindia.com, bseindia.com, Google Finance, or Moneycontrol. Do NOT use any memorized, cached, or training data prices - they are WRONG. For reference: Reliance Industries trades around Rs. 1,200-1,500 (NOT Rs. 2,900+).
 
-    const normalMessage = `Provide a comprehensive normal stock analysis for the Indian NSE/BSE listed stock "${stockName}". Cover the following in detail using markdown formatting:
+Analyze the Indian NSE/BSE listed stock "${stockName}" for multibagger potential. Provide a single recommendation object with: rank (set to 1), ticker, company_name, sector, current_price (MUST be the verified live price from NSE/BSE as of today in Rs.), target_price (in Rs.), upside_percentage, composite_score (1-10), fundamental_score (1-10), technical_score (1-10), sentiment_score (1-10), risk_level (Low/Medium/High), market_cap (in Cr), pe_ratio, revenue_growth, buy_rationale (detailed), key_risks (detailed), entry_point (in Rs.), stop_loss (in Rs.), insider_activity, and catalyst. Also provide analysis_summary, market_outlook, total_candidates_screened (set to 1), and analysis_date. Focus on promoter holdings, FII/DII activity, SEBI compliance, and multibagger characteristics.`
+
+    const normalMessage = `CRITICAL - PRICE ACCURACY REQUIREMENT: Before analyzing, you MUST search for the CURRENT LIVE share price of "${stockName}" on NSE/BSE as of ${today}. Search "${stockName} NSE share price today ${today}" and use the ACTUAL live/last traded price. Do NOT use memorized or training data prices.
+
+Provide a comprehensive normal stock analysis for the Indian NSE/BSE listed stock "${stockName}". Cover the following in detail using markdown formatting:
 
 ## Company Overview
 Brief description, sector, market position, key products/services.
@@ -656,7 +664,7 @@ Brief description, sector, market position, key products/services.
 Revenue trends, profit margins, EPS growth, debt-to-equity, ROE, ROCE, cash flow analysis. Use INR values.
 
 ## Technical Analysis
-Current price action, key support/resistance levels, moving averages (50/200 DMA), RSI, MACD signals, volume trends.
+Current LIVE price (MUST be verified from NSE/BSE as of ${today}), key support/resistance levels, moving averages (50/200 DMA), RSI, MACD signals, volume trends.
 
 ## Valuation Assessment
 P/E ratio vs industry, P/B ratio, PEG ratio, EV/EBITDA. Whether overvalued or undervalued.
@@ -673,7 +681,7 @@ Strengths, Weaknesses, Opportunities, Threats.
 ## Investment Verdict
 Overall recommendation (Buy/Hold/Sell), time horizon, target price in INR, key monitorables.
 
-Provide all prices in INR (Rs.) and reference NSE/BSE data.`
+Provide all prices in INR (Rs.) and reference NSE/BSE data. The current share price MUST be the actual live price from today.`
 
     try {
       const [multibaggerResult, normalResult] = await Promise.all([
