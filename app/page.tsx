@@ -38,15 +38,15 @@ const TEAMS_AGENT_ID = '699316dacb2b470c78df003c'
 const SCHEDULE_ID = '699316e1399dfadeac3775a8'
 
 const SECTORS = [
-  'Technology', 'Healthcare', 'Finance', 'Energy', 'Consumer',
-  'Industrial', 'Materials', 'Utilities', 'Real Estate', 'Communication'
+  'IT Services', 'Pharma', 'BFSI', 'Auto', 'FMCG',
+  'Metals', 'Infrastructure', 'Chemicals', 'Textiles', 'Defence'
 ]
 
 const MARKET_CAP_LABELS: Record<number, string> = {
-  0: 'Micro ($50M-$300M)',
-  1: 'Small ($300M-$2B)',
-  2: 'Mid ($2B-$10B)',
-  3: 'Large ($10B+)',
+  0: 'Micro (below 500 Cr)',
+  1: 'Small (500-5,000 Cr)',
+  2: 'Mid (5,000-20,000 Cr)',
+  3: 'Large (20,000 Cr+)',
 }
 
 const RISK_LEVELS = ['Conservative', 'Moderate', 'Aggressive'] as const
@@ -106,126 +106,126 @@ interface HistoryEntry {
 const SAMPLE_RECOMMENDATIONS: Recommendation[] = [
   {
     rank: 1,
-    ticker: 'NVDA',
-    company_name: 'NVIDIA Corporation',
-    sector: 'Technology',
-    current_price: '$875.28',
-    target_price: '$1,250.00',
-    upside_percentage: '42.8%',
-    composite_score: 9.2,
-    fundamental_score: 8.8,
-    technical_score: 9.5,
-    sentiment_score: 9.3,
+    ticker: 'TATAELXSI',
+    company_name: 'Tata Elxsi Limited',
+    sector: 'IT Services',
+    current_price: 'Rs. 7,450',
+    target_price: 'Rs. 10,500',
+    upside_percentage: '40.9%',
+    composite_score: 9.1,
+    fundamental_score: 8.9,
+    technical_score: 9.2,
+    sentiment_score: 9.2,
     risk_level: 'Medium',
-    market_cap: '$2.16T',
-    pe_ratio: '72.4',
-    revenue_growth: '122%',
-    buy_rationale: 'Dominant position in AI/ML infrastructure with data center revenue growing 400%+ YoY. CUDA ecosystem moat is deepening as enterprise AI adoption accelerates. Supply constraints easing with new Blackwell architecture shipping in H2.',
-    key_risks: 'High valuation multiples, customer concentration risk with hyperscalers, potential export restrictions to China, cyclical semiconductor demand.',
-    entry_point: '$850-$880',
-    stop_loss: '$780',
-    insider_activity: 'CFO sold $4.2M in shares (routine 10b5-1 plan)',
-    catalyst: 'Blackwell GPU ramp, GTC conference announcements, sovereign AI deals'
+    market_cap: 'Rs. 46,400 Cr',
+    pe_ratio: '62.5',
+    revenue_growth: '28%',
+    buy_rationale: 'Leading embedded product design company benefiting from EV, autonomous driving, and media & entertainment digitization. Strong order book with marquee global OEM clients. High promoter holding at 43.9% with zero promoter pledge.',
+    key_risks: 'Rich valuation multiples, client concentration risk, global auto slowdown impacting ER&D spends, INR appreciation impacting margins.',
+    entry_point: 'Rs. 7,200-7,500',
+    stop_loss: 'Rs. 6,500',
+    insider_activity: 'No significant insider selling; promoter holding stable',
+    catalyst: 'EV design wins, new OEM partnerships, margin expansion from AI/ML services'
   },
   {
     rank: 2,
-    ticker: 'CELH',
-    company_name: 'Celsius Holdings',
-    sector: 'Consumer',
-    current_price: '$62.15',
-    target_price: '$95.00',
-    upside_percentage: '52.9%',
-    composite_score: 8.7,
-    fundamental_score: 8.5,
-    technical_score: 8.2,
+    ticker: 'DIXON',
+    company_name: 'Dixon Technologies',
+    sector: 'Infrastructure',
+    current_price: 'Rs. 12,800',
+    target_price: 'Rs. 18,000',
+    upside_percentage: '40.6%',
+    composite_score: 8.8,
+    fundamental_score: 8.6,
+    technical_score: 8.4,
     sentiment_score: 9.4,
     risk_level: 'Medium',
-    market_cap: '$14.5B',
-    pe_ratio: '85.2',
-    revenue_growth: '95%',
-    buy_rationale: 'Fastest-growing functional beverage brand taking share from incumbents. Pepsi distribution partnership provides massive shelf-space expansion. International rollout in early innings with 18 new markets planned.',
-    key_risks: 'Premium valuation, single category concentration, potential competitive response from Monster/Red Bull, commodity input costs.',
-    entry_point: '$58-$63',
-    stop_loss: '$52',
-    insider_activity: 'CEO purchased $1.8M in open market',
-    catalyst: 'International expansion updates, Q2 scanner data, new product launches'
+    market_cap: 'Rs. 76,500 Cr',
+    pe_ratio: '115',
+    revenue_growth: '68%',
+    buy_rationale: 'India\'s largest EMS player riding the PLI scheme wave. Samsung, Xiaomi, Google Pixel manufacturing contracts secured. Backward integration into PCB and sub-assemblies improving margins. FII holding increased by 3.2% last quarter.',
+    key_risks: 'High PE valuation, customer concentration, PLI subsidy dependence, raw material import costs, forex risk.',
+    entry_point: 'Rs. 12,500-13,000',
+    stop_loss: 'Rs. 11,000',
+    insider_activity: 'Promoter increased holding by 0.5% via creeping acquisition',
+    catalyst: 'Apple ecosystem entry, PLI disbursements, IT hardware manufacturing expansion'
   },
   {
     rank: 3,
-    ticker: 'ANET',
-    company_name: 'Arista Networks',
-    sector: 'Technology',
-    current_price: '$312.50',
-    target_price: '$420.00',
-    upside_percentage: '34.4%',
-    composite_score: 8.4,
+    ticker: 'CLEAN',
+    company_name: 'Clean Science & Technology',
+    sector: 'Chemicals',
+    current_price: 'Rs. 1,520',
+    target_price: 'Rs. 2,100',
+    upside_percentage: '38.2%',
+    composite_score: 8.5,
     fundamental_score: 9.0,
-    technical_score: 8.1,
-    sentiment_score: 8.1,
+    technical_score: 8.0,
+    sentiment_score: 8.5,
     risk_level: 'Low',
-    market_cap: '$96B',
-    pe_ratio: '42.8',
-    revenue_growth: '28%',
-    buy_rationale: 'Critical networking infrastructure provider for AI/ML data centers. 400G/800G switch demand accelerating as hyperscalers build out AI clusters. 80%+ gross margins with strong recurring software revenue.',
-    key_risks: 'Hyperscaler capex cycle dependency, Cisco competitive response, supply chain concentration.',
-    entry_point: '$300-$315',
-    stop_loss: '$275',
-    insider_activity: 'No significant insider activity',
-    catalyst: 'AI networking TAM expansion, campus networking wins, 800G adoption ramp'
+    market_cap: 'Rs. 16,100 Cr',
+    pe_ratio: '48.3',
+    revenue_growth: '22%',
+    buy_rationale: 'Monopoly in MEHQ and BHA performance chemicals with 50%+ EBITDA margins. Unique catalytic process eliminates hazardous waste. Zero debt with Rs. 800 Cr cash. New capacity for HALS and guaiacol coming online FY26.',
+    key_risks: 'Concentration in few product lines, raw material price volatility, new capacity utilization risk, global chemical demand slowdown.',
+    entry_point: 'Rs. 1,480-1,540',
+    stop_loss: 'Rs. 1,320',
+    insider_activity: 'No insider selling; promoter holding at 55.2%',
+    catalyst: 'New product launches, export market expansion, HALS capacity commissioning'
   },
   {
     rank: 4,
-    ticker: 'TMDX',
-    company_name: 'TransMedics Group',
-    sector: 'Healthcare',
-    current_price: '$88.40',
-    target_price: '$140.00',
-    upside_percentage: '58.4%',
-    composite_score: 8.1,
-    fundamental_score: 7.8,
-    technical_score: 8.3,
-    sentiment_score: 8.2,
+    ticker: 'KAYNES',
+    company_name: 'Kaynes Technology',
+    sector: 'Defence',
+    current_price: 'Rs. 4,850',
+    target_price: 'Rs. 7,200',
+    upside_percentage: '48.5%',
+    composite_score: 8.2,
+    fundamental_score: 7.9,
+    technical_score: 8.4,
+    sentiment_score: 8.3,
     risk_level: 'High',
-    market_cap: '$3.2B',
+    market_cap: 'Rs. 27,600 Cr',
     pe_ratio: 'N/A',
-    revenue_growth: '148%',
-    buy_rationale: 'Monopoly in organ perfusion technology with no direct competitors. National OCS Program creating recurring aviation revenue stream. Expanding into liver and heart transplants with regulatory tailwinds.',
-    key_risks: 'Single product company, execution risk on aviation build-out, reimbursement uncertainty, stock-based compensation dilution.',
-    entry_point: '$82-$90',
-    stop_loss: '$72',
-    insider_activity: 'Board member purchased $500K in shares',
-    catalyst: 'NOP program expansion, new center activations, potential lung perfusion data'
+    revenue_growth: '85%',
+    buy_rationale: 'Full-stack ESDM company with OSAT semiconductor facility under construction. Defence orders growing at 100%+ with BEL/DRDO/HAL as key clients. Only listed Indian company with PCB-to-chip packaging capability. Order book at Rs. 4,200 Cr.',
+    key_risks: 'High capex for OSAT facility, execution risk on semiconductor fab, defence order lumpy recognition, rich valuations.',
+    entry_point: 'Rs. 4,700-4,900',
+    stop_loss: 'Rs. 4,000',
+    insider_activity: 'Promoter purchased Rs. 12 Cr in open market',
+    catalyst: 'OSAT commissioning, defence order wins, semiconductor PLI benefits'
   },
   {
     rank: 5,
-    ticker: 'ARIS',
-    company_name: 'Aris Water Solutions',
-    sector: 'Energy',
-    current_price: '$18.75',
-    target_price: '$28.00',
-    upside_percentage: '49.3%',
-    composite_score: 7.8,
-    fundamental_score: 8.2,
-    technical_score: 7.5,
-    sentiment_score: 7.7,
-    risk_level: 'Medium',
-    market_cap: '$1.1B',
-    pe_ratio: '22.1',
-    revenue_growth: '32%',
-    buy_rationale: 'Essential water management services for Permian Basin operations. Asset-light model with 60%+ EBITDA margins. Growing recycling volumes as operators prioritize ESG water metrics.',
-    key_risks: 'Permian Basin concentration, oil price sensitivity, regulatory changes in water disposal, customer concentration.',
-    entry_point: '$17.50-$19.00',
-    stop_loss: '$15.50',
-    insider_activity: 'Multiple insiders purchasing shares in past 30 days',
-    catalyst: 'New recycling contracts, Permian production growth, dividend increase'
+    ticker: 'MANKIND',
+    company_name: 'Mankind Pharma',
+    sector: 'Pharma',
+    current_price: 'Rs. 2,380',
+    target_price: 'Rs. 3,200',
+    upside_percentage: '34.5%',
+    composite_score: 7.9,
+    fundamental_score: 8.3,
+    technical_score: 7.6,
+    sentiment_score: 7.8,
+    risk_level: 'Low',
+    market_cap: 'Rs. 95,200 Cr',
+    pe_ratio: '38.5',
+    revenue_growth: '18%',
+    buy_rationale: 'India\'s 4th largest pharma company with dominant position in chronic therapies. BSV acquisition transforms consumer health portfolio. Pan-India distribution with 12,000+ field force covering 95% pin codes.',
+    key_risks: 'BSV integration execution, NLEM price controls, competitive intensity in OTC segment, working capital stretch.',
+    entry_point: 'Rs. 2,300-2,400',
+    stop_loss: 'Rs. 2,050',
+    insider_activity: 'DII increased holding by 2.1% last quarter',
+    catalyst: 'BSV synergy realization, chronic therapy market share gains, OTC brand launches'
   }
 ]
 
 const SAMPLE_ANALYSIS: AnalysisResult = {
   recommendations: SAMPLE_RECOMMENDATIONS,
-  analysis_summary: 'Our multi-factor screening identified 5 high-conviction multibagger candidates from an initial universe of 2,847 stocks. The current market environment favors companies with strong secular tailwinds in AI infrastructure, healthcare innovation, and essential services. We see the best risk/reward in mid-cap growth names with proven execution and expanding TAMs.',
-  market_outlook: 'Constructive with selective opportunities. Broadening market participation beyond mega-caps creates favorable conditions for stock picking. Key risks include persistent inflation, geopolitical tensions, and potential Fed policy surprises. Favor companies with pricing power and margin expansion catalysts.',
-  total_candidates_screened: 2847,
+  analysis_summary: 'Our multi-factor screening identified 5 high-conviction multibagger candidates from an initial universe of 1,847 NSE/BSE listed stocks. The Indian market environment favors companies with strong domestic consumption tailwinds, PLI scheme beneficiaries, and China+1 manufacturing themes. Best risk/reward in mid-cap growth names with high promoter holdings and proven execution.',
+  market_outlook: 'NIFTY consolidating near all-time highs with FII flows turning positive. Sectoral rotation favoring domestic cyclicals and capex themes. Key risks include crude oil spikes, INR depreciation, and global risk-off events. Favor companies with pricing power, import substitution catalysts, and rising DII/FII ownership.',
+  total_candidates_screened: 1847,
   analysis_date: '2025-02-15'
 }
 
@@ -532,7 +532,7 @@ export default function Page() {
       setTotalScreened(SAMPLE_ANALYSIS.total_candidates_screened)
       setAnalysisDate(SAMPLE_ANALYSIS.analysis_date)
       setLastAnalysisTime('Sample Data')
-      setSelectedSectors(['Technology', 'Consumer', 'Healthcare', 'Energy'])
+      setSelectedSectors(['IT Services', 'Pharma', 'Chemicals', 'Defence'])
     }
     if (!showSample && lastAnalysisTime === 'Sample Data') {
       setRecommendations([])
@@ -572,8 +572,8 @@ export default function Page() {
       setAnalysisProgress(prev => Math.min(prev + Math.random() * 8, 92))
     }, 800)
 
-    const capLabel = MARKET_CAP_LABELS[marketCapRange[0] ?? 1] ?? 'Small ($300M-$2B)'
-    const message = `Analyze stocks with the following screening criteria: Sectors: ${selectedSectors.join(', ')}. Market Cap Range: ${capLabel}. Risk Tolerance: ${riskTolerance}. Find multibagger candidates with strong fundamentals, technical momentum, and positive sentiment. Rank by composite score and provide detailed buy rationale.`
+    const capLabel = MARKET_CAP_LABELS[marketCapRange[0] ?? 1] ?? 'Small (500-5,000 Cr)'
+    const message = `Analyze Indian NSE/BSE listed stocks with the following screening criteria: Sectors: ${selectedSectors.join(', ')}. Market Cap Range: ${capLabel}. Risk Tolerance: ${riskTolerance}. Find multibagger candidates with strong fundamentals, technical momentum, and positive sentiment. Focus on promoter holdings, FII/DII activity, and SEBI compliance. Rank by composite score and provide detailed buy rationale with entry points in INR.`
 
     try {
       const result = await callAIAgent(message, COORDINATOR_AGENT_ID)
@@ -1512,7 +1512,7 @@ export default function Page() {
                           <div className={`w-2.5 h-2.5 rounded-full flex-shrink-0 ${activeAgentId === COORDINATOR_AGENT_ID ? 'bg-emerald-500 animate-pulse' : 'bg-muted-foreground/30'}`} />
                           <div className="flex-1 min-w-0">
                             <p className="text-sm font-medium">Stock Analysis Coordinator</p>
-                            <p className="text-xs text-muted-foreground">Coordinates fundamental, technical, and sentiment analysis across sub-agents. Produces ranked multibagger candidates.</p>
+                            <p className="text-xs text-muted-foreground">Coordinates fundamental, technical, and sentiment analysis of NSE/BSE listed Indian stocks. Produces ranked multibagger candidates with INR pricing.</p>
                           </div>
                           <Badge variant="outline" className="text-xs font-mono flex-shrink-0">Manager</Badge>
                         </div>
@@ -1520,7 +1520,7 @@ export default function Page() {
                           <div className={`w-2.5 h-2.5 rounded-full flex-shrink-0 ${activeAgentId === TEAMS_AGENT_ID ? 'bg-emerald-500 animate-pulse' : 'bg-muted-foreground/30'}`} />
                           <div className="flex-1 min-w-0">
                             <p className="text-sm font-medium">Teams Alert Agent</p>
-                            <p className="text-xs text-muted-foreground">Formats and delivers stock recommendations to Microsoft Teams channels with structured alerts.</p>
+                            <p className="text-xs text-muted-foreground">Formats and delivers Indian stock recommendations to Microsoft Teams channels with structured alerts in INR.</p>
                           </div>
                           <Badge variant="outline" className="text-xs font-mono flex-shrink-0">Scheduled</Badge>
                         </div>
